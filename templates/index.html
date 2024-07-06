@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOV to WEBM Converter</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+            /* background-color: aliceblue; */
+        }
+        .modal-content{
+            background-color: aliceblue;
+        }
+        .container {
+            max-width: 80%;
+        }
+        .btn-play {
+            width: 80px;
+        }
+        .modal-dialog {
+            max-width: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">MOV to WEBM Converter</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-success mt-3">{{ messages[0] }}</div>
+        {% endif %}
+    {% endwith %}
+    <form id="upload-form" action="{{ url_for('upload_files') }}" method="post" enctype="multipart/form-data" class="mt-3">
+        <div class="form-group">
+            <label for="files">Choose MOV files</label>
+            <input type="file" class="form-control-file" id="files" name="files" multiple>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    <button id="convert-all" class="btn btn-success mt-3">Convert All</button>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h2>Files in Input Directory</h2>
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="input-files">
+                    {% for file in input_files %}
+                        <tr>
+                            <td>{{ file }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-play" onclick="playVideo('{{ url_for('static', filename='input/' ~ file) }}', 'video/quicktime')">Play</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h2>Files in Output Directory</h2>
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="output-files">
+                    {% for file in output_files %}
+                        <tr>
+                            <td>{{ file }}</td>
+                            <td>
+                                <button class="btn btn-primary btn-play" onclick="playVideo('{{ url_for('static', filename='output/' ~ file) }}', 'video/webm')">Play</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="videoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalLabel">Play Video</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <video id="videoPlayer" controls style="width: 100%;">
+                        <source id="videoSource" type="">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+function playVideo(url, mimeType) {
+    const videoSource = document.getElementById('videoSource');
+    videoSource.src = url;
+    videoSource.type = mimeType;
+    document.getElementById('videoPlayer').load();
+    $('#videoModal').modal('show');
+}
+
+$(document).ready(function() {
+    $('#convert-all').on('click', function() {
+        $.post('{{ url_for('convert_files') }}', function(data) {
+            if (data.status === 'success') {
+                location.reload();
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
