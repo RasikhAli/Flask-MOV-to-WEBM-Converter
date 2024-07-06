@@ -6,6 +6,9 @@ This Flask application allows users to upload MOV files, convert them to WEBM fo
 - Python 3.x installed
 - Flask framework
 - ffmpeg installed and added to system PATH
+ 
+**ffmpeg Download:**
+You can download the latest version of ffmpeg for Windows from [ffmpeg.org](https://ffmpeg.org/download.html).
 
 ## Installation
 1. Clone the repository:
@@ -13,6 +16,7 @@ This Flask application allows users to upload MOV files, convert them to WEBM fo
    git clone <repository_url>
    cd Flask-MOV-to-WEBM-Converter
    ```
+   
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
@@ -38,9 +42,10 @@ This Flask application allows users to upload MOV files, convert them to WEBM fo
 
 ## Folder Structure
   ```
+      ffmpeg-master-latest-win64-gpl/      # Files of ffmpeg
       static/
-        input/: Directory to store uploaded MOV files.
-        output/: Directory to store converted WEBM files.
+           input/: Directory to store uploaded MOV files.
+           output/: Directory to store converted WEBM files.
   ```
 
 ## Technologies Used
