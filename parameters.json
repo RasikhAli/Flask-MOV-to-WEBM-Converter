@@ -1,0 +1,23 @@
+{
+    "low_quality": {
+        "video_bitrate": "1M",
+        "crf": "40",
+        "cpu_used": "3",
+        "audio_codec": "libopus",
+        "audio_bitrate": "64k"
+    },
+    "medium_quality": {
+        "video_bitrate": "2M",
+        "crf": "30",
+        "cpu_used": "2",
+        "audio_codec": "libopus",
+        "audio_bitrate": "128k"
+    },
+    "high_quality": {
+        "video_bitrate": "4M",
+        "crf": "20",
+        "cpu_used": "1",
+        "audio_codec": "libopus",
+        "audio_bitrate": "256k"
+    }
+}

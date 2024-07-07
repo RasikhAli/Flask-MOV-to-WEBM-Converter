@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 import os
 import subprocess
+import json
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -12,8 +13,15 @@ OUTPUT_FOLDER = 'static/output'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-def convert_mov_to_webm(input_folder, output_folder):
-    ffmpeg_path = 'ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe'
+def load_parameters(quality):
+    with open('parameters.json', 'r') as file:
+        params = json.load(file)
+    return params[quality]
+
+def convert_mov_to_webm(input_folder, output_folder, quality):
+    params = load_parameters(quality)
+    ffmpeg_path = 'ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe'
+    
     for file_name in os.listdir(input_folder):
         if file_name.endswith('.mov'):
             input_file = os.path.join(input_folder, file_name)
@@ -21,9 +29,12 @@ def convert_mov_to_webm(input_folder, output_folder):
             command = [
                 ffmpeg_path,
                 '-i', input_file,
-                '-c:v', 'libvpx-vp9',  
-                '-b:v', '1M',
-                '-c:a', 'libvorbis',
+                '-c:v', 'libvpx-vp9',
+                '-b:v', params['video_bitrate'],
+                '-crf', str(params['crf']),
+                '-cpu-used', str(params['cpu_used']),
+                '-c:a', params['audio_codec'],
+                '-b:a', params['audio_bitrate'],
                 output_file
             ]
             subprocess.run(command)
@@ -51,7 +62,8 @@ def upload_files():
 
 @app.route('/convert_files', methods=['POST'])
 def convert_files():
-    convert_mov_to_webm(UPLOAD_FOLDER, OUTPUT_FOLDER)
+    quality = request.form.get('quality', 'medium_quality')  # Default to medium_quality if not specified
+    convert_mov_to_webm(UPLOAD_FOLDER, OUTPUT_FOLDER, quality)
     return jsonify(status="success")
 
 @app.route('/get_files', methods=['GET'])
