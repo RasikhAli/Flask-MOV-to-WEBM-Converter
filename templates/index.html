@@ -8,7 +8,6 @@
     <style>
         body {
             padding-top: 20px;
-            /* background-color: aliceblue; */
         }
         .modal-content{
             background-color: aliceblue;
@@ -39,6 +38,16 @@
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+    
+    <div class="form-group mt-3">
+        <label for="quality">Select Quality</label>
+        <select id="quality" class="form-control">
+            <option value="low_quality">Low Quality</option>
+            <option value="medium_quality" selected>Medium Quality</option>
+            <option value="high_quality">High Quality</option>
+        </select>
+    </div>
+
     <button id="convert-all" class="btn btn-success mt-3">Convert All</button>
 
     <div class="row mt-5">
@@ -120,7 +129,8 @@ function playVideo(url, mimeType) {
 
 $(document).ready(function() {
     $('#convert-all').on('click', function() {
-        $.post('{{ url_for('convert_files') }}', function(data) {
+        const quality = $('#quality').val();
+        $.post('{{ url_for('convert_files') }}', { quality: quality }, function(data) {
             if (data.status === 'success') {
                 location.reload();
             }
